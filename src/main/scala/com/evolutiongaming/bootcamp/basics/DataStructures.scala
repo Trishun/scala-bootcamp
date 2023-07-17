@@ -81,7 +81,7 @@ object DataStructures {
   // Exercise. Write a function that checks if all values in a `List` are equal.
   // Think about what you think your function should return if `list` is empty, and why.
   def allEqual[T](list: List[T]): Boolean = {
-    false // TODO: implement
+    list.toSet.size == (0 | 1)
   }
 
   // Maps

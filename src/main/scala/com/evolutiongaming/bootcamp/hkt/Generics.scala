@@ -2,7 +2,8 @@ package com.evolutiongaming.bootcamp.hkt
 
 object Generics {
   case class Triple[+A](x: A, y: A, z: A) {
-    def zip[B](other: Triple[B]): Triple[(A, B)] = ??? // exercise 1 :  implement
+    // def zip[B](other: Triple[B]): Triple[(A, B)] = ??? // exercise 1 :  implement
+    def zip[B](other: Triple[B]): Triple[(A, B)] = Triple((x, other.x), (y, other.y), (z, other.z)) // exercise 1 :  implement
 
     //    def set(index: Triple.Index, value: A): Triple[A]  //exercise 3 (hard) : fix the definition and implement
 
@@ -10,7 +11,13 @@ object Generics {
 
   object Triple {
 
-    def fromList[A](elements: List[A]): Option[Triple[A]] = ??? // exercise 2 : implement
+    // def fromList[A](elements: List[A]): Option[Triple[A]] = ??? // exercise 2 : implement
+
+    def fromList[A](elements: List[A]): Option[Triple[A]] = elements match {
+      case x :: y :: z :: Nil => Some(Triple(x, y, z))
+      case _ => None
+    } // exercise 2 : implement
+
 
     sealed trait Index
 

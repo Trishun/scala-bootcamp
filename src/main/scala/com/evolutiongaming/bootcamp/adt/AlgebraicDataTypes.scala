@@ -69,14 +69,20 @@ object AlgebraicDataTypes {
   // Exercise. Create a smart constructor for `GameLevel` that only permits levels from 1 to 80 (inclusive).
   final case class GameLevel private (value: Int) extends AnyVal
   object GameLevel {
-    def create(value: Int): Option[GameLevel] = ???
+    def create(value: Int): Option[GameLevel] = {
+      Option.when((1 to 80) contains value)(GameLevel(value))
+    }
   }
 
   // To disable creating case classes in any other way besides smart constructor, the following pattern
   // can be used. However, it is rather syntax-heavy and cannot be combined with value classes.
   sealed abstract case class Time private (hour: Int, minute: Int)
   object Time {
-    def create(hour: Int, minute: Int): Either[String, Time] = Right(new Time(hour, minute) {})
+    def create(hour: Int, minute: Int): Either[String, Time] =
+      for {
+        hour1 <- Either.cond(0 to 23 contains hour,  hour, "Invalid hour value")
+        minute1 <- Either.cond(0 to 59 contains minute,  minute, "Invalid minute value")
+      } yield new Time(hour1, minute1){}
   }
 
   // Exercise. Implement the smart constructor for `Time` that only permits values from 00:00 to 23:59 and
@@ -135,7 +141,13 @@ object AlgebraicDataTypes {
     creditCardService: CreditCardService,
     cashService: CashService,
   ) {
-    def processPayment(amount: BigDecimal, method: PaymentMethod): PaymentStatus = ???
+    def processPayment(amount: BigDecimal, method: PaymentMethod): PaymentStatus = {
+      method match {
+        case BankAccount(accountNumber) => bankAccountService.processPayment(amount, accountNumber)
+        case CreditCard(cardNumber, validityDate) => creditCardService.processPayment(amount, CreditCard(cardNumber, validityDate))
+        case Cash => cashService.processPayment(amount)
+      }
+    }
   }
 
   // Let's compare that to `NaivePaymentService.processPayment` implementation, which does not use ADTs, but

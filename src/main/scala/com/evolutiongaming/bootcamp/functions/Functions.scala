@@ -1,6 +1,7 @@
 package com.evolutiongaming.bootcamp.functions
 
 import java.time.Instant
+import scala.util.Try
 
 object Functions {
 
@@ -82,7 +83,11 @@ object Functions {
   // Polymorphic functions have at least one type parameter.
 
   // Exercise. Implement `mapOption` function without calling `Option` APIs.
-  def mapOption[A, B](option: Option[A], f: A => B): Option[B] = ???
+  //  def mapOption[A, B](option: Option[A], f: A => B): Option[B] = ???
+  def mapOption[A, B](option: Option[A], f: A => B): Option[B] = option match  {
+      case Some(value) => Some(f(value))
+      case None => None
+    }
 
   // FUNCTION COMPOSITION
 
@@ -183,13 +188,16 @@ object Functions {
   // Exercises. Convert the following functions into pure functions. Replace ??? with correct return types.
 
   def parseDate(s: String): Instant = Instant.parse(s)
-  def parseDatePure(s: String): ??? = ???
+  // def parseDatePure(s: String): ??? = ???
+  def parseDatePure(s: String): Option[Instant] = Try(Instant.parse(s)).toOption
 
   def divide(a: Int, b: Int): Int     = a / b
   def dividePure(a: Int, b: Int): ??? = ???
 
-  def isAfterNow(date: Instant): Boolean   = date.isAfter(Instant.now())
-  def isAfterNowPure( /* ??? */ ): Boolean = ???
+  // def isAfterNow(date: Instant): Boolean   = date.isAfter(Instant.now())
+  // def isAfterNowPure( /* ??? */ ): Boolean = ???
+  def isAfterNow(date: Instant): Boolean = date.isAfter(Instant.now())
+  def isAfterNowPure(date: Instant, now: Instant): Boolean = date.isAfter(now)
 
   case class NonEmptyList[T](head: T, rest: List[T])
   def makeNonEmptyList[T](list: List[T]): NonEmptyList[T] = {

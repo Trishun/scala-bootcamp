@@ -1,7 +1,7 @@
 package com.evolutiongaming.bootcamp.basics
 
 import java.io.FileNotFoundException
-
+import java.time.Month
 import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -32,7 +32,11 @@ object ControlStructures {
   // Exercise. Implement a "Fizz-Buzz" https://en.wikipedia.org/wiki/Fizz_buzz function using the if-else,
   // returning "fizzbuzz" for numbers which divide with 15, "fizz" for those which divide by 3 and "buzz" for
   // those which divide with 5, and returning the input number as a string for other numbers:
-  def fizzBuzz1(n: Int): String = ???
+  // def fizzBuzz1(n: Int): String = ???
+  def fizzBuzz1(n: Int): String = if (n % 5 == 0 && n % 3 == 0) "fizzbuzz"
+  else if (n % 3 == 0) "fizz"
+  else if (n % 5 == 0) "buzz"
+  else s"$n"
 
   // Pattern Matching
   //
@@ -46,23 +50,32 @@ object ControlStructures {
   // }
 
   type ErrorMessage = String
+//  def monthName(x: Int): Either[ErrorMessage, String] =
+//    x match {
+//      case 1           => Right("January")
+//      case 2           => Right("February")
+//      case 3           => Right("March")
+//      case 4           => Right("April")
+//      case 5           => Right("May")
+//      case 6           => Right("June")
+//      case 7           => Right("July")
+//      case 8           => Right("August")
+//      case 9           => Right("September")
+//      case 10          => Right("October")
+//      case 11          => Right("November")
+//      case 12          => Right("December")
+//      case x if x <= 0 => Left(s"Month $x is too small")
+//      case x           => Left(s"Month $x is too large")
+//    }
+
+
   def monthName(x: Int): Either[ErrorMessage, String] =
     x match {
-      case 1           => Right("January")
-      case 2           => Right("February")
-      case 3           => Right("March")
-      case 4           => Right("April")
-      case 5           => Right("May")
-      case 6           => Right("June")
-      case 7           => Right("July")
-      case 8           => Right("August")
-      case 9           => Right("September")
-      case 10          => Right("October")
-      case 11          => Right("November")
-      case 12          => Right("December")
       case x if x <= 0 => Left(s"Month $x is too small")
-      case x           => Left(s"Month $x is too large")
+      case x if x > 12 => Left(s"Month $x is too large")
+      case x => Right(Month.of(x).name())
     }
+
 
   // Question. How would you improve `monthName`?
   // Question. What would you use in its place if you wanted to more properly handle multiple locales?
@@ -105,7 +118,13 @@ object ControlStructures {
   }
 
   // Exercise. Implement a "Fizz-Buzz" function using pattern matching:
-  def fizzBuzz2(n: Int): String = ???
+//  def fizzBuzz2(n: Int): String = ???
+  def fizzBuzz2(n: Int): String = n match {
+    case n if n % 3 == 0 && n % 5 == 0 => "fizzbuzz"
+    case n if n % 3 == 0 => "fizz"
+    case n if n % 5 == 0 => "buzz"
+    case _ => s"$n"
+  }
 
   // Recursion
   //
@@ -149,14 +168,18 @@ object ControlStructures {
   //
   // Thus `applyNTimesForInts(_ + 1, 4)(3)` should return `((((3 + 1) + 1) + 1) + 1)` or `7`.
   def applyNTimesForInts(f: Int => Int, n: Int): Int => Int = { x: Int =>
-    f(x + n) // replace with a correct implementation
+  //  f(x + n) // replace with a correct implementation
+  //  (1 until n).foldLeft(f(x))((acc, _) => f(acc))
+    if (n == 1) f(x) else applyNTimesForInts(f, n - 1)(f(x))
   }
 
   // Exercise: Convert the function `applyNTimesForInts` into a polymorphic function `applyNTimes`:
   def applyNTimes[A](f: A => A, n: Int): A => A = { x: A =>
     // replace with correct implementation
-    println(n)
-    f(x)
+//    println(n)
+//    f(x)
+    if (n == 1) f(x)
+    else applyNTimes(f, n - 1)(f(x))
   }
 
   // `map`, `flatMap` and `filter` are not control structures, but methods that various collections (and
@@ -288,26 +311,33 @@ object ControlStructures {
   // Exercise:
   //
   // Given:
-  //  A = Set(0, 1, 2)
-  //  B = Set(true, false)
+    val A = Set(0, 1, 2)
+    val B = Set(true, false)
   //
   // List all the elements in `A * B`.
   //
   // Use a "for comprehension" in your solution.
 
-  val AProductB: Set[(Int, Boolean)] = Set()
+  // val AProductB: Set[(Int, Boolean)] = Set()
+  val AProductB: Set[(Int, Boolean)] = for {
+    x <- A
+    y <- B
+  } yield (x, y)
 
   // Exercise:
   //
   // Given:
   // A = { 0, 1, 2 }
   // B = { true, false }
+  val A2 = Set(0,1,2)
+  val B2 = Set(true,false)
   //
   // List all the elements in `A + B`.
   //
   // Use "map" and `++` (`Set` union operation) in your solution.
 
-  val ASumB: Set[Either[Int, Boolean]] = Set()
+//  val ASumB: Set[Either[Int, Boolean]] = Set()
+  val ASumB: Set[Either[Int, Boolean]] = A2.map(Left(_)) ++ B2.map(Right(_))
 
   // Scala inherits the standard try-catch-finally construct from Java:
   def printFile(fileName: String): Unit = {

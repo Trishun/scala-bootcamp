@@ -251,7 +251,8 @@ object Basics {
   // Try defining it using both String concatenation and interpolation.
   //
   // Note. `???` can be used to indicate code that is yet to be implemented.
-  def helloMethod(name: String): String = ???
+  // def helloMethod(name: String): String = ???
+  def helloMethod(name: String): String = s"Hello $name"
 
   // Exercise. Define a method "add" which takes two integers and returns their sum.
   def add(a: Int, b: Int): Int = a * 42 - b / 4 // replace with a correct implementation
@@ -276,11 +277,13 @@ object Basics {
   // Exercise. Implement `helloFunction` using `helloMethod` you implemented above. Why was the type
   // annotation skipped when defining `helloFunction`?
 
-  val helloFunction: String => String = (name: String) => /* implement here */ name
+//  val helloFunction: String => String = (name: String) => /* implement here */ name
+  val helloFunction: String => String = (name: String) => helloMethod(name)
 
   // Exercise. Using the aforementioned String `length` implement a `stringLength` function which returns
   // the length of the String passed.
-  val stringLength: String => Int = (s: String) => /* implement here */ s.hashCode()
+//  val stringLength: String => Int = (s: String) => /* implement here */ s.hashCode()
+  val stringLength: String => Int = (s: String) => s.length
 
   // If each argument of a function is used exactly once, you can use `_` to refer to them
   val addFunction: (Int, Int) => Int = _ + _
@@ -338,8 +341,18 @@ object Basics {
   val hello: String => String = greeter("Hello")
   val helloWorld: String      = hello("World") // Hello, World!
 
+  val hw: String = greeter("Hello")("World")
+
   val goodMorning: String => String = greeter("Good morning")
   val goodMorningWorld: String      = goodMorning("World") // Good morning, World!
+
+  // A more convoluted example:
+  def formatNamedDouble(name: String, format: Double => String): Double => String = { x: Double =>
+    s"$name = ${format(x)}"
+  }
+
+  val fourDecimalPlaces: Double => String = (x: Double) => f"$x%.4f"
+  val formattedNamedDouble: String = formatNamedDouble("x", fourDecimalPlaces)(Math.PI) // x = 3.1416
 
   // Exercise. Implement `power` method which takes a Byte `n` and returns a function from Int to
   // Long, raising the Int parameter provided to the n-th power using `Math.pow`.
@@ -348,7 +361,8 @@ object Basics {
 
   def power(n: Byte): Int => Long = { x: Int =>
     // implement here
-    (x + n).toLong
+//    (x + n).toLong
+      Math.pow(x.toDouble, n.toDouble).round
   }
 
   private val squared: Int => Long = power(2)
@@ -374,6 +388,10 @@ object Basics {
   private val areAllEqual1 = allEqual[Int](NonEmptyList.of(1, 1, 1))
   private val areAllEqual2 = allEqual(NonEmptyList.of(1, 1, 1))
 
+  def formatNamedValue[A](name: String, format: A => String): A => String = { x : A =>
+    s"$name = ${format(x)}"
+  }
+
   // Using such "parametric polymorphism" helps us do "parametric reasoning" - to reason about implementation
   // merely by looking at type signatures.
 
@@ -385,6 +403,16 @@ object Basics {
 
   // For example, we can assume just from looking at the type signature that the polymorphic version of
   // `allEqual` does not do arithmetic on the elements, while we cannot assume this for the `Int` version.
+
+  val commasForThousands: Long => String = (x: Long) => f"$x%,d"
+  val formattedLong: String = formatNamedValue("y", commasForThousands)(123456) // y = 123,456
+
+  // Question: What is `A` for `formatNamedValue` in this `formattedLong` invocation of it?
+
+  // Exercise. Invoke `formatNamedValue` with a `List[String]` as `A`. You can use `_.mkString(", ")` to
+  // concatenate the list with comma as a delimiter. You can provide the `List[String]` type
+  // explicitly after the method name or for the `format` function.
+  //  formatNamedValue[List[String]]("something", _.mkString(", "))(List("asdf", "qwerty"))
 
   // Tuples
   //
@@ -426,10 +454,12 @@ object Basics {
   // More exercises to help internalise the "types define the set of possible values that a value can have":
 
   // Exercise. List all values of the type `Option[Boolean]`:
-  val allOptionBooleans: Set[Option[Boolean]] = Set()
+//  val allOptionBooleans: Set[Option[Boolean]] = Set()
+    val allOptionBooleans: Set[Option[Boolean]] = Set(None, Some(true), Some(false))
 
   // Exercise. List all values of the type `Either[Unit, Boolean]`:
-  val allEitherUnitBooleans: Set[Either[Unit, Boolean]] = Set()
+//  val allEitherUnitBooleans: Set[Either[Unit, Boolean]] = Set()
+    val allEitherUnitBooleans: Set[Either[Unit, Boolean]] = Set(Left(()), Right(true), Right(false))
 
   // Exercise. List all values of the type `Either[Boolean, Boolean]`:
   val allEitherBooleanBooleans: Set[Either[Boolean, Boolean]] = Set()
@@ -438,4 +468,13 @@ object Basics {
   val allTupleBooleanBooleans: Set[(Boolean, Boolean)] = Set()
 
   // Question. Can we make a `Set` with all possible `Byte` values? `Double` values? `String` values?
+
+  // Homework. Implement functions that calculate https://en.wikipedia.org/wiki/Least_common_multiple and
+  // https://en.wikipedia.org/wiki/Greatest_common_divisor for integers.
+
+  def lcm(a: Int, b: Int): Int = ???
+  def gcd(a: Int, b: Int): Int = ???
+
+  // Create a new Git public repository for your homework solutions, use `basics` package for this homework.
+  // You can use `sbt new scala/hello-world.g8` to start a new bare-bones Scala SBT project.
 }
